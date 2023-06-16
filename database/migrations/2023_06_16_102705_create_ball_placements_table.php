@@ -17,6 +17,7 @@ class CreateBallPlacementsTable extends Migration
             $table->id();
             $table->integer('ball_id');
             $table->integer('total_balls');
+            $table->integer('bucket_id');
             $table->timestamps();
         });
     }

@@ -40,7 +40,7 @@
         </div>
 
         <div class="form-group">
-            <label for="ball_volume">Volume (in inches):</label>
+            <label for="ball_volume">Volume (in cubic inches):</label>
             <input type="number" step="0.01" class="form-control" id="ball_volume" name="ball_volume" required>
         </div>
         <a type="button" class="btn btn-danger" href="{{ route('balls.index') }}">Cancel</a>

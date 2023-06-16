@@ -11,7 +11,7 @@
             <thead>
             <tr>
                 <th style="border:1px solid #dee2e6!important;">Ball Name</th>
-                <th style="border:1px solid #dee2e6!important;">Volume (in inches)</th>
+                <th style="border:1px solid #dee2e6!important;">Volume (in cubic inches)</th>
                 <th style="border:1px solid #dee2e6!important;">Actions</th>
             </tr>
             </thead>

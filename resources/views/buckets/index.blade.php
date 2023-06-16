@@ -11,9 +11,9 @@
             <thead>
             <tr>
                 <th style="border:1px solid #dee2e6!important;">Bucket Name</th>
-                <th style="border:1px solid #dee2e6!important;">Total Volume (in inches)</th>
-                <th style="border:1px solid #dee2e6!important;">Filled Volume (in inches)</th>
-                <th style="border:1px solid #dee2e6!important;">Empty Volume (in inches)</th>
+                <th style="border:1px solid #dee2e6!important;">Total Volume (in cubic inches)</th>
+                <th style="border:1px solid #dee2e6!important;">Filled Volume (in cubic inches)</th>
+                <th style="border:1px solid #dee2e6!important;">Empty Volume (in cubic inches)</th>
                 <th style="border:1px solid #dee2e6!important;">Actions</th>
             </tr>
             </thead>

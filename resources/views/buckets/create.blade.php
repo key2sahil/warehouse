@@ -40,7 +40,7 @@
         </div>
 
         <div class="form-group">
-            <label for="bucket_total_volume">Volume (in inches):</label>
+            <label for="bucket_total_volume">Volume (in cubic inches):</label>
             <input type="number" step="0.01" class="form-control" id="bucket_total_volume" name="bucket_total_volume" required>
         </div>
         <a type="button" class="btn btn-danger" href="{{ route('buckets.index') }}">Cancel</a>
