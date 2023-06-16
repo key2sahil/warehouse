@@ -16,15 +16,12 @@ class BallPlacementController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->input('ball');
-        foreach ($data as $ballId => $totalBalls) {
-            if ($totalBalls !== null) {
-                BallPlacement::create([
-                    'ball_id' => $ballId,
-                    'total_balls' => $totalBalls,
-                ]);
-            }
-        }
+
+        $validatedData = $request->validate([
+            'ball_id' => 'required',
+            'total_balls' => 'required',
+        ]);
+        BallPlacement::create($validatedData);
 
         return redirect()->back()->with('success', 'Ball placements saved successfully');
     }

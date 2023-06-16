@@ -54,6 +54,12 @@ class BucketController extends Controller
             return redirect()->route('buckets.index')->with('error', 'Bucket name already exists');
         }
 
+        $bucket = Bucket::find($request->input('id'));
+
+        if (!$bucket) {
+            return redirect()->route('buckets.index')->with('error', 'Bucket not found');
+        }
+
         $bucket->update($request->all());
         return redirect()->route('buckets.index')->with('success', 'Bucket updated successfully');
     }

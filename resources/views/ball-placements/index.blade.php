@@ -23,7 +23,7 @@
     <h1>Balls Placement</h1>
 
     <form method="POST" action="/place-balls">
-{{--        @csrf--}}
+        @csrf
         <div class="form-group row">
 
             <div class="col-6">
@@ -35,7 +35,9 @@
                 </select>
             </div>
             <div class="col-6">
-                <input type="number" min="0" class="form-control" id="ball1_total" name="ball[{{ $ball->id }}]" placeholder="Enter Total">
+                <div class="form-group">
+                    <input type="number" min="1" required placeholder="Total Balls" class="form-control" id="total_balls" name="total_balls">
+                </div>
             </div>
         </div>
         <div class="col-12">

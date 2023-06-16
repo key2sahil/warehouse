@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ball;
+use App\Models\BallPlacement;
 
 class BallController extends Controller
 {
@@ -18,6 +19,12 @@ class BallController extends Controller
             'ball_name' => 'required',
             'ball_volume' => 'required|numeric',
         ]);
+
+        $existingBall = Ball::where('ball_name', $request->input('ball_name'))->first();
+
+        if ($existingBall) {
+            return redirect('/balls/create')->with('error', 'Ball name already exists.');
+        }
 
         Ball::create($validatedData);
 
@@ -36,6 +43,30 @@ class BallController extends Controller
 
     public function update(Request $request, Ball $ball)
     {
+
+        $existingBall = Ball::where('ball_name', $ball['ball_name'])
+            ->where('id', '!=', $ball['id'])
+            ->first();
+
+        if ($existingBall) {
+            return redirect()->route('balls.index')->with('error', 'Ball name already exists');
+        }
+
+        $ball = Ball::find($ball['id']);
+        if (!$ball) {
+            return redirect()->route('balls.index')->with('error', 'Ball not found');
+        }
+//        return response()->json(['ball' => 'dfgdfg', 'message' => 'Test'], 201);
+
+        $isSameBall = Ball::where('ball_name', $ball['ball_name'])
+            ->where('id', $ball['id'])
+            ->where('ball_volume', $ball['ball_volume'])
+            ->first();
+
+        if($isSameBall) {
+            BallPlacement::where('ball_id', $ball['id'])->delete();
+        }
+
         $ball->update($request->all());
         return redirect()->route('balls.index')->with('success', 'Ball updated successfully');
     }

@@ -13,6 +13,10 @@
         .success-message {
             color: green;
         }
+
+        .error-message {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -22,6 +26,9 @@
     <h1>Create Ball</h1>
     @if(session('success'))
         <p class="success-message">{{ session('success') }}</p>
+    @endif
+    @if(session('error'))
+        <p class="error-message">{{ session('error') }}</p>
     @endif
 
     <form method="POST" action="/balls">

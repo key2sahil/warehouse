@@ -29,7 +29,7 @@
 
         <div class="form-group">
             <label for="bucket_name">Bucket Name:</label>
-            <input type="text" class="form-control" name="bucket_name" value="{{ $bucket->bucket_name }}">
+            <input type="text" class="form-control" name="bucket_name" disabled value="{{ $bucket->bucket_name }}">
         </div>
 
         <div class="form-group">
