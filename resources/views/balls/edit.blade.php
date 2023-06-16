@@ -34,9 +34,10 @@
 
         <div class="form-group">
             <label for="ball_volume">Total Volume:</label>
-            <input type="text" class="form-control" name="ball_volume" value="{{ $ball->ball_volume }}">
+            <input type="number" min="0.01" step="0.01" class="form-control" name="ball_volume" value="{{ $ball->ball_volume }}">
         </div>
 
+        <a type="button" class="btn btn-danger" href="{{ route('balls.index') }}">Cancel</a>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>

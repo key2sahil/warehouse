@@ -12,5 +12,6 @@ class BallPlacement extends Model
     protected $fillable = [
         'ball_id',
         'total_balls',
+        'bucket_id',
     ];
 }

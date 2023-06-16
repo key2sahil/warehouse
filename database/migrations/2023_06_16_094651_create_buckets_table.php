@@ -17,7 +17,7 @@ class CreateBucketsTable extends Migration
             $table->id();
             $table->string('bucket_name');
             $table->float('bucket_total_volume')->default(0);
-            $table->float('bucket_bucket_filled_volume')->default(0);
+            $table->float('bucket_filled_volume')->default(0);
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BallPlacement;
 use Illuminate\Http\Request;
 use App\Models\Bucket;
 
@@ -54,13 +55,16 @@ class BucketController extends Controller
             return redirect()->route('buckets.index')->with('error', 'Bucket name already exists');
         }
 
-        $bucket = Bucket::find($request->input('id'));
-
-        if (!$bucket) {
+        $bucketData = Bucket::find($bucket['id']);
+        if (!$bucketData) {
             return redirect()->route('buckets.index')->with('error', 'Bucket not found');
         }
 
-        $bucket->update($request->all());
+        $dataToUpdate = array();
+        $dataToUpdate['bucket_total_volume'] = $request['bucket_total_volume'];
+        $dataToUpdate['bucket_filled_volume'] = 0;
+        $bucket->update($dataToUpdate);
+        BallPlacement::where('bucket_id', $bucket['id'])->delete();
         return redirect()->route('buckets.index')->with('success', 'Bucket updated successfully');
     }
 

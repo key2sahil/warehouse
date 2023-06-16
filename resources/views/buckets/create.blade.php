@@ -43,7 +43,7 @@
             <label for="bucket_total_volume">Volume (in inches):</label>
             <input type="number" step="0.01" class="form-control" id="bucket_total_volume" name="bucket_total_volume" required>
         </div>
-
+        <a type="button" class="btn btn-danger" href="{{ route('buckets.index') }}">Cancel</a>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>

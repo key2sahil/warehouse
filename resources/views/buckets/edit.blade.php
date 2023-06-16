@@ -34,9 +34,9 @@
 
         <div class="form-group">
             <label for="bucket_total_volume">Total Volume:</label>
-            <input type="text" class="form-control" name="bucket_total_volume" value="{{ $bucket->bucket_total_volume }}">
+            <input type="number" step="0.01" min="0.01" class="form-control" name="bucket_total_volume" value="{{ $bucket->bucket_total_volume }}">
         </div>
-
+        <a type="button" class="btn btn-danger" href="{{ route('buckets.index') }}">Cancel</a>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>
