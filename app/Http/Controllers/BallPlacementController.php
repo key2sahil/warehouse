@@ -6,36 +6,68 @@ use App\Models\Ball;
 use App\Models\Bucket;
 use App\Models\BallPlacement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BallPlacementController extends Controller
 {
     public function index()
     {
         $balls = Ball::all();
-
         $buckets = Bucket::all();
-        $totalEmptyVolume = 0;
-        if ($buckets) {
-            foreach ($buckets as $bucket) {
-                $emptyVolume = $bucket['bucket_total_volume'] - $bucket['bucket_filled_volume'];
-                $totalEmptyVolume += $emptyVolume;
+
+        $query = DB::table('ball_placements')
+            ->select('buckets.bucket_name AS bucket_name', 'balls.ball_name AS ball_name', 'ball_placements.total_balls AS total_balls')
+            ->leftJoin('buckets', 'buckets.id', '=', 'ball_placements.bucket_id')
+            ->leftJoin('balls', 'balls.id', '=', 'ball_placements.ball_id')
+            ->orderBy('buckets.bucket_name')
+            ->orderBy('balls.ball_name')
+            ->get();
+
+        $data = json_decode($query, true);
+
+        $ballPlacements = [];
+
+        foreach ($data as $item) {
+            $bucketName = $item['bucket_name'];
+            $ballName = $item['ball_name'];
+            $totalBalls = $item['total_balls'];
+
+            if (!isset($ballPlacements[$bucketName])) {
+                $ballPlacements[$bucketName] = [];
             }
+
+            if (!isset($ballPlacements[$bucketName][$ballName])) {
+                $ballPlacements[$bucketName][$ballName] = 0;
+            }
+
+            $ballPlacements[$bucketName][$ballName] += $totalBalls;
         }
-        return view('ball-placements.index', compact('balls', 'totalEmptyVolume', 'buckets'));
+
+//        $ballPlacements = json_encode($ballPlacements);
+
+        return view('ball-placements.index', compact('balls', 'ballPlacements', 'buckets'));
     }
 
     public function store(Request $request)
     {
 
         $validatedData = $request->validate([
-            'ball_id' => 'required',
             'total_balls' => 'required',
         ]);
+        $totalBallArray = $validatedData['total_balls'];
+        foreach ($totalBallArray as $id => $totalBalls) {
 
-        $bucketId = 1; // Replace with the desired bucket ID
+            if($totalBalls > 0) {
+                $this->ballPlacement($id, $totalBalls);
+            }
+        }
+        return redirect()->back()->with('success', 'Ball placements saved successfully');
+    }
+
+    public function ballPlacement($ball_id, $totalBalls) {
 
         $ballDetails = Ball::select('ball_name', 'ball_volume')
-            ->where('id', $validatedData['ball_id'])
+            ->where('id', $ball_id)
             ->first();
 
         if ($ballDetails) {
@@ -46,22 +78,20 @@ class BallPlacementController extends Controller
 
             if ($buckets) {
                 $totalEmptyVolume = 0;
-                $totalBalls = $validatedData['total_balls'];
-                $requestedVolume = $totalBalls * $ballVolume;
+                $requestedVolume = (float)$totalBalls * (float)$ballVolume;
+
+                        foreach ($buckets as $bucket) {
+
+                            $emptyVolume = $bucket['bucket_total_volume'] - $bucket['bucket_filled_volume'];
+                            $totalEmptyVolume += $emptyVolume;
+                        }
+
+                        if($requestedVolume > $totalEmptyVolume) {
+
+                            return redirect()->back()->with('error', 'We do not have enough space.');
+                        }
 
                 foreach ($buckets as $bucket) {
-
-                    $emptyVolume = $bucket['bucket_total_volume'] - $bucket['bucket_filled_volume'];
-                    $totalEmptyVolume += $emptyVolume;
-                }
-
-                if($requestedVolume > $totalEmptyVolume) {
-
-                    return redirect()->back()->with('error', 'We do not have enough space.');
-                }
-
-                foreach ($buckets as $bucket) {
-
 
                     $emptyVolume = $bucket['bucket_total_volume'] - $bucket['bucket_filled_volume'];
                     if (isset($emptyVolume) && ($emptyVolume > 0) && isset($ballVolume) && ($ballVolume > 0)) {
@@ -79,7 +109,7 @@ class BallPlacementController extends Controller
                                 $requestedVolume = $requestedVolume - ($tBalls * $ballDetails->ball_volume);
                                 $filledBalls = $tBalls * $ballDetails->ball_volume;
                             }
-                            $ballPlacementData['ball_id'] = $validatedData['ball_id'];
+                            $ballPlacementData['ball_id'] = $ball_id;
                             $ballPlacementData['bucket_id'] = $bucket['id'];
                             $ballPlacementData['total_balls'] = $filledBalls / $ballDetails->ball_volume;
                             BallPlacement::create($ballPlacementData);
@@ -92,9 +122,5 @@ class BallPlacementController extends Controller
                 }
             }
         }
-
-//        return response()->json(['message' => 'OK'], 201);
-
-        return redirect()->back()->with('success', 'Ball placements saved successfully');
     }
 }
