@@ -50,7 +50,7 @@ class BallPlacementController extends Controller
 
     public function store(Request $request)
     {
-
+        $isBallPlaced = 0;
         $validatedData = $request->validate([
             'total_balls' => 'required',
         ]);
@@ -58,14 +58,18 @@ class BallPlacementController extends Controller
         foreach ($totalBallArray as $id => $totalBalls) {
 
             if($totalBalls > 0) {
-                $this->ballPlacement($id, $totalBalls);
+                $isBallPlaced = $this->ballPlacement($id, $totalBalls);
             }
         }
-        return redirect()->back()->with('success', 'Ball placements saved successfully');
+        if($isBallPlaced) {
+            return redirect()->back()->with('success', 'Ball placements saved successfully');
+        }
+        return redirect()->back()->with('error', 'There is no enough space to place balls.');
     }
 
     public function ballPlacement($ball_id, $totalBalls) {
 
+        $isBallPlaced = 0;
         $ballDetails = Ball::select('ball_name', 'ball_volume')
             ->where('id', $ball_id)
             ->first();
@@ -77,19 +81,13 @@ class BallPlacementController extends Controller
             $buckets = Bucket::all();
 
             if ($buckets) {
-                $totalEmptyVolume = 0;
+
                 $requestedVolume = (float)$totalBalls * (float)$ballVolume;
 
-                        foreach ($buckets as $bucket) {
+                foreach ($buckets as $bucket) {
 
-                            $emptyVolume = $bucket['bucket_total_volume'] - $bucket['bucket_filled_volume'];
-                            $totalEmptyVolume += $emptyVolume;
-                        }
-
-                        if($requestedVolume > $totalEmptyVolume) {
-
-                            return redirect()->back()->with('error', 'We do not have enough space.');
-                        }
+                    $emptyVolume = $bucket['bucket_total_volume'] - $bucket['bucket_filled_volume'];
+                }
 
                 foreach ($buckets as $bucket) {
 
@@ -114,6 +112,7 @@ class BallPlacementController extends Controller
                             $ballPlacementData['total_balls'] = $filledBalls / $ballDetails->ball_volume;
                             BallPlacement::create($ballPlacementData);
                             Bucket::where('id', $bucket['id'])->update(['bucket_filled_volume' => $bucket['bucket_filled_volume']]);
+                            $isBallPlaced = 1;
                             if($requestedVolume <= 0) {
                                 break;
                             }
@@ -122,5 +121,6 @@ class BallPlacementController extends Controller
                 }
             }
         }
+        return $isBallPlaced;
     }
 }

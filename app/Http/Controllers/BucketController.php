@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\BallPlacement;
 use Illuminate\Http\Request;
 use App\Models\Bucket;
+use Illuminate\Support\Facades\DB;
 
 class BucketController extends Controller
 {
     //
     public function create()
     {
+        DB::table('buckets')->update(['bucket_filled_volume' => 0]);
+        DB::table('ball_placements')->truncate();
         return view('buckets.create');
     }
 
@@ -59,18 +62,17 @@ class BucketController extends Controller
         if (!$bucketData) {
             return redirect()->route('buckets.index')->with('error', 'Bucket not found');
         }
-
-        $dataToUpdate = array();
-        $dataToUpdate['bucket_total_volume'] = $request['bucket_total_volume'];
-        $dataToUpdate['bucket_filled_volume'] = 0;
-        $bucket->update($dataToUpdate);
-        BallPlacement::where('bucket_id', $bucket['id'])->delete();
+        $bucket->update(['bucket_total_volume' => $request['bucket_total_volume']]);
+        DB::table('buckets')->update(['bucket_filled_volume' => 0]);
+        DB::table('ball_placements')->truncate();
         return redirect()->route('buckets.index')->with('success', 'Bucket updated successfully');
     }
 
     public function destroy(Bucket $bucket)
     {
         $bucket->delete();
+        DB::table('buckets')->update(['bucket_filled_volume' => 0]);
+        DB::table('ball_placements')->truncate();
         return redirect()->route('buckets.index')->with('success', 'Bucket deleted successfully');
     }
 }

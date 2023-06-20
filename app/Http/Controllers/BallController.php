@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bucket;
 use Illuminate\Http\Request;
 use App\Models\Ball;
 use App\Models\BallPlacement;
+use Illuminate\Support\Facades\DB;
 
 class BallController extends Controller
 {
     public function create()
     {
+        DB::table('buckets')->update(['bucket_filled_volume' => 0]);
+        DB::table('ball_placements')->truncate();
         return view('balls.create');
     }
 
@@ -59,12 +63,16 @@ class BallController extends Controller
 
         BallPlacement::where('ball_id', $ball['id'])->delete();
         $ball->update($request->all());
+        DB::table('buckets')->update(['bucket_filled_volume' => 0]);
+        DB::table('ball_placements')->truncate();
         return redirect()->route('balls.index')->with('success', 'Ball updated successfully');
     }
 
     public function destroy(Ball $ball)
     {
         $ball->delete();
+//        DB::table('buckets')->update(['bucket_filled_volume' => 0]);
+        DB::table('ball_placements')->truncate();
         return redirect()->route('balls.index')->with('success', 'Ball deleted successfully');
     }
 }
